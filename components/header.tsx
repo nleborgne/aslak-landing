@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const closeMenu = () => {
-    setIsMenuOpen(false)
-  }
+    setIsMenuOpen(false);
+  };
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
+    const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
+      element.scrollIntoView({ behavior: "smooth" });
     }
-    closeMenu()
-  }
+    closeMenu();
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700">
@@ -33,10 +33,11 @@ export function Header() {
               onClick={() => scrollToSection("hero")}
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
-              <img src="/placeholder.svg?height=40&width=40&text=CF" alt="CrossFit Aslak Logo" className="w-10 h-10" />
-              <span className="text-2xl font-bold text-[#ec3642] hover:text-[#d12b36] transition-colors">
-                CrossFit Aslak
-              </span>
+              <img
+                src="/aslak-logo.png"
+                alt="CrossFit Aslak Logo"
+                className="w-16 h-16"
+              />
             </button>
           </div>
 
@@ -73,7 +74,7 @@ export function Header() {
             <Button
               onClick={() => scrollToSection("contact")}
               size="sm"
-              className="bg-[#ec3642] hover:bg-[#d12b36] text-black font-bold"
+              className="bg-[#ec3642] hover:bg-[#d12b36] text-white font-bold"
             >
               Réserver
             </Button>
@@ -81,8 +82,15 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-gray-300 hover:text-[#ec3642] transition-colors">
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <button
+              onClick={toggleMenu}
+              className="text-gray-300 hover:text-[#ec3642] transition-colors"
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -129,5 +137,5 @@ export function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }

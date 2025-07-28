@@ -4,7 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CrossFit Aslak - Box de CrossFit",
+  title: "CrossFit ASLAK",
   description: "Box de CrossFit à Carrières-sur-Seine (78)",
 };
 

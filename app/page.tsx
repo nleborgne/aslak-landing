@@ -1,308 +1,287 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
-import { Header } from "@/components/header";
+import Planning from "@/components/planning";
 
-export default function CrossFitAslakPage() {
+// ------------------------------------------------------------
+// CrossFit Aslak — Landing v1
+// Sections demandées : Planning, Prix (S'abonner / Séance d'essai), Coachs, Avis Google, Partenaires
+// Design language : dark mode, gradients néon (vert/bleu), cartes glassmorphism, CTA collant.
+// ------------------------------------------------------------
+
+const plans = [
+  {
+    name: "Illimité",
+    price: "129€ / mois",
+    bullets: [
+      "Accès illimité WOD & Open Gym",
+      "Suivi perf. & programmation",
+      "Pause possible 1x/mois",
+    ],
+    cta: { label: "S'abonner", emphasis: true },
+    tag: "Meilleur choix",
+  },
+  {
+    name: "3x / semaine",
+    price: "99€ / mois",
+    bullets: ["12 séances / mois", "Réservation 7j à l'avance", "WOD & Haltéro"],
+    cta: { label: "S'abonner", emphasis: false },
+  },
+  {
+    name: "Drop‑in",
+    price: "20€ / séance",
+    bullets: ["Accès 1 séance", "Pour visiteurs / essai"],
+    cta: { label: "Séance d'essai", emphasis: false },
+  },
+];
+
+const coaches = [
+  { nom: "Nina", role: "Head Coach", badges: ["CF-L2", "Gym"], color: "from-fuchsia-500 to-violet-600" },
+  { nom: "Lucas", role: "Coach", badges: ["CF-L1", "Haltéro"], color: "from-emerald-500 to-teal-600" },
+  { nom: "Mehdi", role: "Coach", badges: ["CF-L1", "Endurance"], color: "from-sky-500 to-indigo-600" },
+  { nom: "Sabrina", role: "Coach", badges: ["CF-L1", "Mobility"], color: "from-amber-500 to-orange-600" },
+];
+
+const reviews = [
+  {
+    author: "Thomas B.",
+    stars: 5,
+    text:
+      "Box au top, coaching exigeant mais bienveillant. Ambiance de dingue, on progresse vite !",
+  },
+  {
+    author: "Anaïs R.",
+    stars: 5,
+    text: "Super accueil pour les débutants, planning clair et séances variées. Je recommande.",
+  },
+  {
+    author: "Jules M.",
+    stars: 4.8,
+    text: "Matériel nickel, programmation solide. Mention spéciale au suivi individuel.",
+  },
+];
+
+const partners = [
+  { name: "Rogue", short: "ROG" },
+  { name: "Reebok", short: "RBK" },
+  { name: "Wodify", short: "WDF" },
+  { name: "Nocco", short: "NCC" },
+];
+
+export default function AslakLanding() {
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <Header />
-      {/* Section Héro */}
-      <section
-        id="hero"
-        className="relative h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat pt-16"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/60"></div>
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 text-white">
-            CrossFit Aslak
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-200 font-medium">
-            Train the Fighter in you
-          </p>
-          <Button
-            size="lg"
-            className="bg-[#ec3642] hover:bg-[#d12b36] text-white font-bold px-8 py-4 text-lg"
-            asChild
-          >
-            <a href="#contact">Réserver Ma Séance d'Essai</a>
-          </Button>
+    <div className="min-h-screen bg-[#0B0F12] text-white antialiased">
+      {/* Glow background */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+        <div className="absolute top-40 right-10 h-72 w-72 rounded-full bg-sky-500/20 blur-3xl" />
+      </div>
+
+      {/* Sticky CTA bar */}
+      <div className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40 bg-black/60 border-b border-white/10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
+          <Logo />
+          <nav className="ml-auto hidden md:flex items-center gap-6 text-sm text-white/80">
+            <a href="#planning" className="hover:text-white">Planning</a>
+            <a href="#pricing" className="hover:text-white">Prix</a>
+            <a href="#coachs" className="hover:text-white">Coach</a>
+            <a href="#reviews" className="hover:text-white">Avis</a>
+            <a href="#partners" className="hover:text-white">Partenaires</a>
+          </nav>
+          <a href="#pricing" className="ml-auto md:ml-0 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-lime-400 to-emerald-500 px-5 py-2 text-sm font-semibold text-black shadow-lg shadow-emerald-500/20">
+            Réserver une séance d'essai
+          </a>
         </div>
-      </section>
+      </div>
 
-      {/* Section Qu'est-ce que le CrossFit */}
-      <section id="crossfit" className="py-20 px-4 bg-gray-800">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-[#ec3642]">
-            Qu'est-ce que le CrossFit ?
-          </h2>
-          <p className="text-lg text-gray-300 text-center mb-16 max-w-4xl mx-auto leading-relaxed">
-            Le CrossFit est une méthodologie de fitness qui combine des
-            mouvements fonctionnels constamment variés exécutés à haute
-            intensité. Notre programme offre une condition physique large,
-            générale et inclusive, vous préparant à tous les défis physiques que
-            la vie peut vous réserver.
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="bg-gray-700 border-gray-600 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-6xl mb-4">🔄</div>
-                <h3 className="text-xl font-bold mb-4 text-[#ec3642]">
-                  Constamment Varié
-                </h3>
-                <p className="text-gray-300">
-                  Aucun entraînement ne se ressemble. Nous varions constamment
-                  les exercices, les répétitions et les durées pour maintenir
-                  votre corps en adaptation et en progression.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-700 border-gray-600 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-6xl mb-4">⚡</div>
-                <h3 className="text-xl font-bold mb-4 text-[#ec3642]">
-                  Haute Intensité
-                </h3>
-                <p className="text-gray-300">
-                  Nous travaillons à haute intensité relative à votre niveau de
-                  forme, maximisant les résultats en un minimum de temps grâce à
-                  des entraînements stimulants et adaptables.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-700 border-gray-600 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-6xl mb-4">🏋️‍♂️</div>
-                <h3 className="text-xl font-bold mb-4 text-[#ec3642]">
-                  Mouvements Fonctionnels
-                </h3>
-                <p className="text-gray-300">
-                  Nous nous concentrons sur des mouvements qui imitent les
-                  activités de la vie quotidienne, développant force et mobilité
-                  qui se traduisent dans vos tâches quotidiennes et vos sports.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Section Coachs */}
-      <section id="coaches" className="py-20 px-4 bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-[#ec3642]">
-            Rencontrez Nos Coachs
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="bg-gray-800 border-gray-700 overflow-hidden">
-              <div className="aspect-square overflow-hidden">
-                <img
-                  src="/coach-alex.jpg"
-                  alt="Alexandre Gasse"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-[#ec3642]">
-                  Alexandre Gasse
-                </h3>
-                <p className="text-sm text-gray-400">
-                  CrossFit Level 2 Trainer Certificate
-                </p>
-                <p className="text-sm text-gray-400">CrossFit Kids</p>
-                <p className="text-sm text-gray-400">CrossFit Judges</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-gray-700 overflow-hidden">
-              <div className="aspect-square overflow-hidden">
-                <img
-                  src="/coach-alix.jpg"
-                  alt="Alix Misantrope"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-[#ec3642]">
-                  Alix Misantrope
-                </h3>
-                <p className="text-sm text-gray-400">
-                  CrossFit Level 1 Trainer
-                </p>
-                <p className="text-sm text-gray-400">CrossFit Judges</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Section Contact */}
-      <section id="contact" className="py-20 px-4 bg-gray-800">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-[#ec3642]">
-            Prêt à Commencer Votre Parcours ?
-          </h2>
-
-          <Card className="bg-gray-700 border-gray-600">
-            <CardContent className="p-8">
-              <form action="#" method="POST" className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium mb-2 text-gray-300"
-                    >
-                      Nom Complet *
-                    </label>
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
-                      placeholder="Votre nom complet"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium mb-2 text-gray-300"
-                    >
-                      Adresse Email *
-                    </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
-                      placeholder="votre.email@exemple.com"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium mb-2 text-gray-300"
-                  >
-                    Numéro de Téléphone
-                  </label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
-                    placeholder="+33 1 23 45 67 89"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium mb-2 text-gray-300"
-                  >
-                    Message
-                  </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    className="bg-gray-600 border-gray-500 text-white placeholder-gray-400"
-                    placeholder="Parlez-nous de vos objectifs fitness ou posez vos questions..."
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full bg-[#ec3642] hover:bg-[#d12b36] text-white font-bold"
-                >
-                  Réserver Mon Essai Gratuit
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Pied de page */}
-      <footer className="bg-gray-900 py-12 px-4 border-t border-gray-700">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4 text-[#ec3642]">
-                CrossFit Aslak
-              </h3>
-              <div className="flex items-start space-x-2 text-gray-300">
-                <MapPin className="w-5 h-5 mt-1 text-[#ec3642]" />
-                <div>
-                  <p>13 rue des entrepreneurs</p>
-                  <p>78420 Carrières-sur-Seine</p>
-                  <p>France</p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold mb-4 text-[#ec3642]">
-                Informations de Contact
-              </h4>
-              <div className="space-y-2 text-gray-300">
-                <div className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 text-[#ec3642]" />
-                  <span>(+33) 06 82 55 75 54</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-[#ec3642]" />
-                  <span>contact@crossfitaslak.com</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold mb-4 text-[#ec3642]">
-                Suivez-Nous
-              </h4>
-              <div className="flex space-x-4">
-                <a
-                  href="https://instagram.com/crossfitaslak"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-[#ec3642] transition-colors"
-                >
-                  <Instagram className="w-6 h-6" />
-                </a>
-                <a
-                  href="https://facebook.com/crossfitaslak"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-[#ec3642] transition-colors"
-                >
-                  <Facebook className="w-6 h-6" />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-700 pt-8 text-center text-gray-400">
-            <p>
-              &copy; {new Date().getFullYear()} CrossFit Aslak. Tous droits
-              réservés.
+      {/* HERO */}
+      <header className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 className="text-5xl sm:text-6xl font-black leading-[1.05]">
+              <span className="block">Libère</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-lime-300 to-sky-400">ta force</span>
+            </h1>
+            <p className="mt-5 max-w-xl text-white/70">
+              Box CrossFit à l'esprit communautaire. Coaching exigeant & bienveillant,
+              programmation orientée progrès, événements <span className="whitespace-nowrap">Aslak Contest</span>.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#pricing" className="inline-flex items-center rounded-xl bg-gradient-to-r from-lime-400 to-emerald-500 px-5 py-3 font-semibold text-black">Séance d'essai gratuite</a>
+              <a href="#planning" className="inline-flex items-center rounded-xl border border-white/20 px-5 py-3 font-semibold hover:bg-white/5">Voir le planning</a>
+            </div>
+            <div className="mt-6 flex items-center gap-6 text-sm text-white/70">
+              <div className="flex items-center gap-2"><Stars score={4.9} /> 4.9/5 • 320+ avis</div>
+              <div>Paris Ouest • 400m² • Parking</div>
+            </div>
+          </div>
+
+          {/* Visual */}
+          <div className="relative h-72 sm:h-96 lg:h-[28rem]">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/10 to-white/0 ring-1 ring-white/10 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(60%_80%_at_20%_20%,rgba(163,230,53,0.15),transparent),radial-gradient(60%_80%_at_80%_80%,rgba(56,189,248,0.15),transparent)]" />
+              <div className="absolute inset-0 grid place-items-center">
+                <div className="aspect-video w-11/12 rounded-2xl bg-black/50 ring-1 ring-white/10 grid place-items-center">
+                  <div className="text-center">
+                    <div className="text-white/60 text-xs uppercase tracking-widest">Hero vidéo</div>
+                    <div className="mt-1 text-white/80 text-sm">(mettez ici un reel Instagram / vidéo WOD)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* PLANNING */}
+      <Planning />
+
+
+      {/* PRICING */}
+      <section id="pricing" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold">Prix & abonnements</h2>
+          <p className="mt-2 text-white/70">Transparence totale. Choisissez votre rythme, commencez par une séance d'essai gratuite.</p>
+        </div>
+
+        <div className="mt-10 grid lg:grid-cols-3 gap-6">
+          {plans.map((p, i) => (
+            <div key={i} className={`relative rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 ${p.tag ? 'lg:scale-[1.02] lg:-translate-y-1' : ''}`}>
+              {p.tag && (
+                <div className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-lime-400 to-emerald-500 px-3 py-1 text-xs font-bold text-black shadow">{p.tag}</div>
+              )}
+              <div className="text-xl font-semibold">{p.name}</div>
+              <div className="mt-2 text-3xl font-black">{p.price}</div>
+              <ul className="mt-4 space-y-2 text-white/80">
+                {p.bullets.map((b, j) => (
+                  <li key={j} className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-emerald-400" /> {b}</li>
+                ))}
+              </ul>
+              <button className={`mt-6 w-full rounded-xl px-5 py-3 font-semibold ${p.cta.emphasis ? 'bg-gradient-to-r from-lime-400 to-emerald-500 text-black' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
+                {p.cta.label}
+              </button>
+              <div className="mt-3 flex items-center justify-center gap-3 text-xs text-white/50">
+                <span>Paiement sécurisé</span>
+                <span>•</span>
+                <span>Apple Pay • CB • SEPA</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center text-sm text-white/60">Frais d'inscription offerts ce mois‑ci • Résiliation 100% en ligne</div>
+      </section>
+
+      {/* COACHS */}
+      <section id="coachs" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="flex items-end justify-between flex-wrap gap-6">
+          <div>
+            <h2 className="text-3xl font-bold">Coach</h2>
+            <p className="mt-1 text-white/70">Une équipe certifiée, experte et accessible.</p>
+          </div>
+          <a href="#" className="text-sm text-white/80 hover:text-white">Voir la programmation & méthodo →</a>
+        </div>
+
+        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {coaches.map((c, idx) => (
+            <div key={idx} className="rounded-3xl ring-1 ring-white/10 bg-white/5 overflow-hidden">
+              <div className={`h-40 bg-gradient-to-br ${c.color} opacity-80`} />
+              <div className="p-5">
+                <div className="text-lg font-semibold">{c.nom}</div>
+                <div className="text-white/70 text-sm">{c.role}</div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {c.badges.map((b, j) => (
+                    <span key={j} className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/80 ring-1 ring-white/10">{b}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* AVIS GOOGLE */}
+      <section id="reviews" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold">Avis Google</h2>
+          <div className="mt-2 inline-flex items-center gap-3 rounded-full bg-white/5 px-4 py-2 ring-1 ring-white/10">
+            <Stars score={4.9} /> <span className="font-semibold">4.9/5</span>
+            <span className="text-white/70">(320+ avis)</span>
+          </div>
+          <p className="mt-2 text-white/70">Ce que la communauté dit de nous.</p>
+        </div>
+
+        <div className="mt-8 grid md:grid-cols-3 gap-6">
+          {reviews.map((r, i) => (
+            <div key={i} className="rounded-3xl bg-white/5 p-5 ring-1 ring-white/10">
+              <div className="flex items-center justify-between">
+                <div className="font-semibold">{r.author}</div>
+                <Stars score={r.stars} />
+              </div>
+              <p className="mt-3 text-white/80">{r.text}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <a className="text-sm text-emerald-300 hover:text-emerald-200" href="#" target="_blank" rel="noreferrer">Voir tous les avis sur Google →</a>
+        </div>
+      </section>
+
+      {/* PARTENAIRES */}
+      <section id="partners" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold">Partenaires</h2>
+          <p className="mt-2 text-white/70">Nos marques & outils de confiance.</p>
+        </div>
+        <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {partners.map((p, i) => (
+            <div key={i} className="group relative rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+              <div className="mx-auto grid place-items-center h-16 w-full rounded-lg bg-gradient-to-r from-white/5 to-white/10">
+                <span className="text-2xl font-black tracking-widest text-white/80 group-hover:text-white">{p.short}</span>
+              </div>
+              <div className="mt-2 text-center text-sm text-white/60">{p.name}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-white/10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 text-sm text-white/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>© {new Date().getFullYear()} CrossFit Aslak — Tous droits réservés.</div>
+          <div className="flex items-center gap-4">
+            <a href="#" className="hover:text-white">Instagram</a>
+            <a href="#" className="hover:text-white">Facebook</a>
+            <a href="#" className="hover:text-white">Contact</a>
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function Stars({ score = 5 }) {
+  const full = Math.floor(score);
+  const half = score - full >= 0.5;
+  const arr = Array.from({ length: 5 }, (_, i) => (i < full ? "full" : i === full && half ? "half" : "empty"));
+  return (
+    <div className="flex items-center gap-1 text-amber-300">
+      {arr.map((t, i) => (
+        <span key={i} aria-hidden className={`inline-block h-4 w-4 ${t === 'empty' ? 'opacity-30' : ''}`}>
+          {t === 'half' ? (
+            <svg viewBox="0 0 24 24" fill="currentColor"><defs><linearGradient id={`g${i}`}><stop offset="50%" stopColor="currentColor" /><stop offset="50%" stopColor="transparent" /></linearGradient></defs><path fill={`url(#g${i})`} d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function Logo() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-lime-400 to-sky-400" />
+      <span className="font-black tracking-tight">CROSSFIT ASLAK</span>
     </div>
   );
 }

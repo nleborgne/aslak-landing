@@ -1,4 +1,7 @@
-import Planning from "@/components/planning";
+"use cache";
+
+import Planning from '@/components/planning';
+import { fetchPlanning } from '@/lib/date';
 
 // ------------------------------------------------------------
 // CrossFit Aslak — Landing v1
@@ -41,15 +44,15 @@ const coaches = [
 
 const reviews = [
   {
-    author: "Thomas B.",
+    author: "Solène C.",
     stars: 5,
     text:
-      "Box au top, coaching exigeant mais bienveillant. Ambiance de dingue, on progresse vite !",
+      "Excellente box de crossfit ! La meilleure du 78 , ou les coachs écoutent et s'adaptent à vous pour vous faire progresser de manière constructive et en sécurité ☺️",
   },
   {
-    author: "Anaïs R.",
+    author: "Gabriel G.",
     stars: 5,
-    text: "Super accueil pour les débutants, planning clair et séances variées. Je recommande.",
+    text: "Super salle de Crossfit, des coachs toujours de bonne humeur et expérimentés. Très bien équipée, une box qui investit et se renouvelle sans arrêt afin de rester au top.",
   },
   {
     author: "Jules M.",
@@ -65,7 +68,9 @@ const partners = [
   { name: "Nocco", short: "NCC" },
 ];
 
-export default function AslakLanding() {
+export default async function AslakLanding() {
+
+  const planning = await fetchPlanning();
 
   return (
     <div className="min-h-screen bg-[#0B0F12] text-white antialiased">
@@ -132,7 +137,7 @@ export default function AslakLanding() {
       </header>
 
       {/* PLANNING */}
-      <Planning />
+      <Planning data={planning} />
 
 
       {/* PRICING */}
@@ -203,8 +208,8 @@ export default function AslakLanding() {
         <div className="text-center">
           <h2 className="text-3xl font-bold">Avis Google</h2>
           <div className="mt-2 inline-flex items-center gap-3 rounded-full bg-white/5 px-4 py-2 ring-1 ring-white/10">
-            <Stars score={4.9} /> <span className="font-semibold">4.9/5</span>
-            <span className="text-white/70">(320+ avis)</span>
+            <Stars score={4.8} /> <span className="font-semibold">4.8/5</span>
+            <span className="text-white/70">(174+ avis)</span>
           </div>
           <p className="mt-2 text-white/70">Ce que la communauté dit de nous.</p>
         </div>

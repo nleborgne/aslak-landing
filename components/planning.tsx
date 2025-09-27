@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import BlurEffect from "react-progressive-blur";
 import {
     Select,
     SelectContent,
@@ -8,6 +9,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Activity = {
     id_activity_calendar: number;
@@ -92,8 +95,39 @@ function groupActivitiesByTimeSlot(activities: Activity[]): { [timeSlot: string]
     return timeGroups;
 }
 
+function parseTimestamp(ts: string): Date | null {
+    const iso = ts.replace(" ", "T");
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return null;
+    return date;
+}
+
+function getStartOfWeek(date: Date): Date {
+    const weekDate = new Date(date);
+    const day = (weekDate.getDay() + 6) % 7; // Monday as first day of week
+    weekDate.setHours(0, 0, 0, 0);
+    weekDate.setDate(weekDate.getDate() - day);
+    return weekDate;
+}
+
+function formatWeekRange(start: Date): string {
+    const startCopy = new Date(start);
+    const endOfWeek = new Date(startCopy);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+
+    const options: Intl.DateTimeFormatOptions = { day: "2-digit", month: "2-digit", year: "numeric" };
+    const startLabel = startCopy.toLocaleDateString("fr-FR", options);
+    const endLabel = endOfWeek.toLocaleDateString("fr-FR", options);
+
+    return `Semaine du ${startLabel} au ${endLabel}`;
+}
+
 export default function Planning({ data }: { data: PlanningResponse }) {
     const [filter, setFilter] = useState("Tous");
+    const [expanded, setExpanded] = useState(false);
+    const [contentHeight, setContentHeight] = useState(0);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
 
 
     const filters = useMemo(() => {
@@ -106,9 +140,57 @@ export default function Planning({ data }: { data: PlanningResponse }) {
         return data.data.activities_calendar.filter(a => a.name_activity === filter);
     }, [data.data.activities_calendar, filter]);
 
-    const groupedActivities = useMemo(() => {
-        return groupActivitiesByDay(filtered);
+    const weeks = useMemo(() => {
+        const weekMap = new Map<string, { start: Date; activities: Activity[] }>();
+
+        const sortedActivities = [...filtered].sort((a, b) => {
+            const dateA = parseTimestamp(a.start_timestamp);
+            const dateB = parseTimestamp(b.start_timestamp);
+            if (!dateA || !dateB) return 0;
+            return dateA.getTime() - dateB.getTime();
+        });
+
+        sortedActivities.forEach(activity => {
+            const startDate = parseTimestamp(activity.start_timestamp);
+            if (!startDate) return;
+            const weekStart = getStartOfWeek(startDate);
+            const key = weekStart.toISOString();
+
+            const entry = weekMap.get(key);
+            if (entry) {
+                entry.activities.push(activity);
+            } else {
+                weekMap.set(key, { start: weekStart, activities: [activity] });
+            }
+        });
+
+        return Array.from(weekMap.values())
+            .sort((a, b) => a.start.getTime() - b.start.getTime())
+            .map(group => ({
+                key: group.start.toISOString(),
+                label: formatWeekRange(group.start),
+                activities: group.activities,
+            }));
     }, [filtered]);
+
+    useEffect(() => {
+        setCurrentWeekIndex(0);
+        setExpanded(false);
+    }, [filter]);
+
+    useEffect(() => {
+        setCurrentWeekIndex(prev => {
+            if (weeks.length === 0) return 0;
+            return Math.min(prev, weeks.length - 1);
+        });
+    }, [weeks.length]);
+
+    const currentWeek = weeks[currentWeekIndex] ?? null;
+    const currentWeekActivities = currentWeek?.activities ?? [];
+
+    const groupedActivities = useMemo(() => {
+        return groupActivitiesByDay(currentWeekActivities);
+    }, [currentWeekActivities]);
 
     const groupedByDayAndTime = useMemo(() => {
         const result: { [dayKey: string]: { [timeSlot: string]: Activity[] } } = {};
@@ -119,6 +201,40 @@ export default function Planning({ data }: { data: PlanningResponse }) {
 
         return result;
     }, [groupedActivities]);
+
+    const canGoPrev = currentWeekIndex > 0;
+    const canGoNext = currentWeekIndex < weeks.length - 1;
+
+    useEffect(() => {
+        const node = contentRef.current;
+        if (!node) return;
+
+        const updateHeight = () => {
+            const nextHeight = node.scrollHeight;
+            setContentHeight(prev => (prev !== nextHeight ? nextHeight : prev));
+        };
+
+        updateHeight();
+
+        if (typeof window === "undefined" || !("ResizeObserver" in window)) {
+            return;
+        }
+
+        const observer = new window.ResizeObserver(() => {
+            updateHeight();
+        });
+
+        observer.observe(node);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [groupedByDayAndTime]);
+
+    const collapsedHeight = contentHeight > 0 ? contentHeight / 2 : 0;
+    const showToggle = contentHeight > 0 && collapsedHeight > 0 && collapsedHeight < contentHeight;
+    const dayCount = Object.keys(groupedByDayAndTime).length;
+
     return (
         <section id="planning" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
             <div className="flex items-end justify-between gap-6 flex-wrap">
@@ -126,101 +242,175 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                     <h2 className="text-3xl font-bold">Live Planning</h2>
                     <p className="mt-1 text-white/70">Filtrez par activité et réservez votre prochaine séance.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-white/70 text-sm">Filtrer:</span>
-                    <Select value={filter} onValueChange={setFilter}>
-                        <SelectTrigger className="w-48 bg-white/5 border-white/10 text-white">
-                            <SelectValue placeholder="Sélectionner une activité" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-black border-white/10">
-                            {filters.map((activity) => (
-                                <SelectItem
-                                    key={activity}
-                                    value={activity}
-                                    className="text-white  hover:bg-white/10 focus:bg-white/10 focus:text-white"
-                                >
-                                    {activity}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <span className="text-white/70 text-sm">Filtrer:</span>
+                        <Select value={filter} onValueChange={setFilter}>
+                            <SelectTrigger className="w-48 bg-white/5 border-white/10 text-white">
+                                <SelectValue placeholder="Sélectionner une activité" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-black border-white/10">
+                                {filters.map((activity) => (
+                                    <SelectItem
+                                        key={activity}
+                                        value={activity}
+                                        className="text-white  hover:bg-white/10 focus:bg-white/10 focus:text-white"
+                                    >
+                                        {activity}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {weeks.length > 0 && (
+                        <div className="flex items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-10 w-10 rounded-full border border-white/10 text-white hover:bg-white/10"
+                                onClick={() => setCurrentWeekIndex(prev => Math.max(0, prev - 1))}
+                                disabled={!canGoPrev}
+                                aria-label="Semaine précédente"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </Button>
+                            <span className="text-white/80 text-sm sm:text-base font-medium text-center min-w-[180px]">
+                                {currentWeek?.label ?? ""}
+                            </span>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-10 w-10 rounded-full border border-white/10 text-white hover:bg-white/10"
+                                onClick={() => setCurrentWeekIndex(prev => Math.min(weeks.length - 1, prev + 1))}
+                                disabled={!canGoNext}
+                                aria-label="Semaine suivante"
+                            >
+                                <ChevronRight className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
 
-
             <div className="mt-6">
-                {/* Desktop: Column layout */}
-                <div className="hidden lg:block">
-                    <div className="overflow-x-auto">
-                        <div className="grid gap-4 min-w-max" style={{ gridTemplateColumns: `repeat(${Object.keys(groupedByDayAndTime).length}, minmax(280px, 1fr))` }}>
-                            {Object.entries(groupedByDayAndTime).map(([dayDate, timeSlots]) => (
-                                <div key={dayDate} className="space-y-4 min-w-0">
-                                    <h3 className="text-lg font-semibold text-white text-center sticky top-0 bg-black/90 backdrop-blur-sm py-3 rounded-lg border border-white/10">{dayDate}</h3>
-                                    <div className="space-y-4">
-                                        {Object.entries(timeSlots).map(([timeSlot, timeActivities]) => (
-                                            <div key={timeSlot} className="space-y-2">
-                                                <div className="text-xl font-semibold text-white/80 text-center">{timeSlot}</div>
-                                                <div className="flex gap-3 overflow-x-auto pb-2">
-                                                    {timeActivities.map((a) => {
-                                                        const remaining = Math.max(0, (a.n_capacity ?? 0) - (a.n_inscribed ?? 0));
-                                                        const badgeStyle = a.color ? { backgroundColor: `${a.color}22`, color: a.color } : {} as any;
-                                                        return (
-                                                            <div key={a.id_activity_calendar} className="flex-shrink-0 w-64 group rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/10 transition">
-                                                                <div className="flex items-center justify-between">
-                                                                    <span className="rounded-full px-2 py-0.5 text-xs uppercase tracking-wide bg-white/10" style={badgeStyle}>{a.name_activity}</span>
-                                                                </div>
-                                                                {/* Optional: show short description without HTML tags */}
-                                                                {/* <div className="mt-1 text-white/70 text-sm">{stripHtml(a.description || "")}</div> */}
-                                                                <div className="mt-6 flex items-center justify-between">
-                                                                    <div className="text-white/60 text-sm">{remaining} places restantes</div>
-                                                                </div>
+                <div className="relative">
+                    <div
+                        className={`transition-[max-height] duration-500 ease-in-out ${showToggle && !expanded ? "overflow-hidden" : ""}`}
+                        style={showToggle ? { maxHeight: expanded ? contentHeight : collapsedHeight } : undefined}
+                    >
+                        <div ref={contentRef}>
+                            {weeks.length === 0 && (
+                                <div className="py-16 text-center text-white/70">
+                                    Aucune activité disponible pour le moment.
+                                </div>
+                            )}
+                            {weeks.length > 0 && dayCount === 0 && (
+                                <div className="py-16 text-center text-white/70">
+                                    Aucune activité prévue pour cette semaine.
+                                </div>
+                            )}
+                            {/* Desktop: Column layout */}
+                            <div className={dayCount > 0 ? "hidden lg:block" : "hidden"}>
+                                <div className="overflow-x-auto">
+                                    <div
+                                        className="grid gap-4 min-w-max"
+                                        style={{ gridTemplateColumns: `repeat(${Math.max(dayCount, 1)}, minmax(280px, 1fr))` }}
+                                    >
+                                        {Object.entries(groupedByDayAndTime).map(([dayDate, timeSlots]) => (
+                                            <div key={dayDate} className="space-y-4 min-w-0">
+                                                <h3 className="text-lg font-semibold text-white text-center sticky top-0 bg-black/90 backdrop-blur-sm py-3 rounded-lg border border-white/10">{dayDate}</h3>
+                                                <div className="space-y-4">
+                                                    {Object.entries(timeSlots).map(([timeSlot, timeActivities]) => (
+                                                        <div key={timeSlot} className="space-y-2">
+                                                            <div className="text-xl font-semibold text-white/80 text-center">{timeSlot}</div>
+                                                            <div className="flex gap-3 overflow-x-auto pb-2">
+                                                                {timeActivities.map((a) => {
+                                                                    const cardStyle = a.color
+                                                                        ? {
+                                                                              backgroundColor: `${a.color}22`,
+                                                                              borderColor: a.color,
+                                                                              color: a.color,
+                                                                          }
+                                                                        : undefined;
+                                                                    return (
+                                                                        <div
+                                                                            key={a.id_activity_calendar}
+                                                                            className="flex-shrink-0 w-48 rounded-xl border p-3 text-center transition hover:bg-white/10 flex items-center justify-center"
+                                                                            style={cardStyle}
+                                                                        >
+                                                                            <div className="text-sm font-semibold truncate">
+                                                                                {a.name_activity}
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
                                                             </div>
-                                                        );
-                                                    })}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                            </div>
 
-                {/* Mobile/Tablet: Row layout */}
-                <div className="lg:hidden space-y-8">
-                    {Object.entries(groupedByDayAndTime).map(([dayDate, timeSlots]) => (
-                        <div key={dayDate}>
-                            <h3 className="text-xl font-semibold text-white mb-4">{dayDate}</h3>
-                            <div className="space-y-6">
-                                {Object.entries(timeSlots).map(([timeSlot, timeActivities]) => (
-                                    <div key={timeSlot} className="space-y-3">
-                                        <div className="text-xl font-semibold text-white/80">{timeSlot}</div>
-                                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {timeActivities.map((a) => {
-                                                const remaining = Math.max(0, (a.n_capacity ?? 0) - (a.n_inscribed ?? 0));
-                                                const badgeStyle = a.color ? { backgroundColor: `${a.color}22`, color: a.color } : {} as any;
-                                                return (
-                                                    <div key={a.id_activity_calendar} className="group rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 hover:bg-white/10 transition">
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="rounded-full px-2 py-0.5 text-xs uppercase tracking-wide bg-white/10" style={badgeStyle}>{a.name_activity}</span>
-                                                        </div>
-                                                        {/* Optional: show short description without HTML tags */}
-                                                        {/* <div className="mt-1 text-white/70 text-sm">{stripHtml(a.description || "")}</div> */}
-                                                        <div className="mt-6 flex items-center justify-between">
-                                                            <div className="text-white/60 text-sm">{remaining} places restantes</div>
-                                                            <button className="rounded-xl bg-gradient-to-r from-lime-400 to-emerald-500 px-4 py-2 text-sm font-semibold text-black shadow-emerald-500/20 shadow-lg">Réserver</button>
-                                                        </div>
+                            {/* Mobile/Tablet: Row layout */}
+                            <div className={`space-y-8 ${dayCount > 0 ? "lg:hidden" : "hidden"}`}>
+                                {Object.entries(groupedByDayAndTime).map(([dayDate, timeSlots]) => (
+                                    <div key={dayDate}>
+                                        <h3 className="text-xl font-semibold text-white mb-4">{dayDate}</h3>
+                                        <div className="space-y-6">
+                                            {Object.entries(timeSlots).map(([timeSlot, timeActivities]) => (
+                                                <div key={timeSlot} className="space-y-3">
+                                                    <div className="text-xl font-semibold text-white/80">{timeSlot}</div>
+                                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                        {timeActivities.map((a) => {
+                                                            const cardStyle = a.color
+                                                                ? {
+                                                                      backgroundColor: `${a.color}22`,
+                                                                      borderColor: a.color,
+                                                                      color: a.color,
+                                                                  }
+                                                                : undefined;
+                                                            return (
+                                                                <div
+                                                                    key={a.id_activity_calendar}
+                                                                    className="rounded-xl border p-3 text-center transition hover:bg-white/10 flex items-center justify-center"
+                                                                    style={cardStyle}
+                                                                >
+                                                                    <div className="text-sm font-semibold truncate">
+                                                                        {a.name_activity}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
                                                     </div>
-                                                );
-                                            })}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    ))}
+                    </div>
+                    {showToggle && !expanded && (
+                        <BlurEffect position="bottom" intensity={80} className="ointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0B0F12] via-[#0B0F12]/60 to-transparent" />
+                    )}
                 </div>
+                {showToggle && (
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            type="button"
+                            className="rounded-xl bg-white/10 px-6 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+                            onClick={() => setExpanded(prev => !prev)}
+                            aria-expanded={expanded}
+                        >
+                            {expanded ? "Voir moins" : "Voir plus"}
+                        </button>
+                    </div>
+                )}
             </div>
 
         </section>

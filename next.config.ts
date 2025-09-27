@@ -1,7 +1,9 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   experimental: {
     useCache: true,
+    reactCompiler: true,
   },
   eslint: {
     ignoreDuringBuilds: true,

@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+
 
 type Activity = {
     id_activity_calendar: number;
@@ -95,6 +97,22 @@ function groupActivitiesByTimeSlot(activities: Activity[]): { [timeSlot: string]
     return timeGroups;
 }
 
+export const works = [
+    {
+        artist: "Ornella Binni",
+        art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
+    },
+    {
+        artist: "Tom Byrom",
+        art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
+    },
+    {
+        artist: "Vladimir Malyavko",
+        art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+    },
+]
+
+
 function parseTimestamp(ts: string): Date | null {
     const iso = ts.replace(" ", "T");
     const date = new Date(iso);
@@ -128,6 +146,7 @@ export default function Planning({ data }: { data: PlanningResponse }) {
     const [contentHeight, setContentHeight] = useState(0);
     const contentRef = useRef<HTMLDivElement>(null);
     const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
+    const [isDesktop, setIsDesktop] = useState(true);
 
 
     const filters = useMemo(() => {
@@ -206,6 +225,23 @@ export default function Planning({ data }: { data: PlanningResponse }) {
     const canGoNext = currentWeekIndex < weeks.length - 1;
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+        const updateMatch = () => setIsDesktop(mediaQuery.matches);
+        updateMatch();
+
+        if (typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", updateMatch);
+            return () => mediaQuery.removeEventListener("change", updateMatch);
+        }
+
+        mediaQuery.addListener(updateMatch);
+        return () => mediaQuery.removeListener(updateMatch);
+    }, []);
+
+    useEffect(() => {
         const node = contentRef.current;
         if (!node) return;
 
@@ -231,8 +267,9 @@ export default function Planning({ data }: { data: PlanningResponse }) {
         };
     }, [groupedByDayAndTime]);
 
-    const collapsedHeight = contentHeight > 0 ? contentHeight / 2 : 0;
-    const showToggle = contentHeight > 0 && collapsedHeight > 0 && collapsedHeight < contentHeight;
+    const toggleThreshold = isDesktop ? 600 : 400;
+    const showToggle = contentHeight > toggleThreshold;
+    const collapsedHeight = showToggle ? toggleThreshold : contentHeight;
     const dayCount = Object.keys(groupedByDayAndTime).length;
 
     return (
@@ -297,7 +334,7 @@ export default function Planning({ data }: { data: PlanningResponse }) {
             <div className="mt-6">
                 <div className="relative">
                     <div
-                        className={`transition-[max-height] duration-500 ease-in-out ${showToggle && !expanded ? "overflow-hidden" : ""}`}
+                        className={`transition-[max-height] duration-500 ease-in-out ${showToggle && !expanded ? "overflow-y-hidden" : ""}`}
                         style={showToggle ? { maxHeight: expanded ? contentHeight : collapsedHeight } : undefined}
                     >
                         <div ref={contentRef}>
@@ -313,9 +350,9 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                             )}
                             {/* Desktop: Column layout */}
                             <div className={dayCount > 0 ? "hidden lg:block" : "hidden"}>
-                                <div className="overflow-x-auto">
+                                <ScrollArea className="whitespace-nowrap overflow-x-hidden">
                                     <div
-                                        className="grid gap-4 min-w-max"
+                                        className="grid gap-4 w-max"
                                         style={{ gridTemplateColumns: `repeat(${Math.max(dayCount, 1)}, minmax(280px, 1fr))` }}
                                     >
                                         {Object.entries(groupedByDayAndTime).map(([dayDate, timeSlots]) => (
@@ -329,10 +366,10 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                                                                 {timeActivities.map((a) => {
                                                                     const cardStyle = a.color
                                                                         ? {
-                                                                              backgroundColor: `${a.color}22`,
-                                                                              borderColor: a.color,
-                                                                              color: a.color,
-                                                                          }
+                                                                            backgroundColor: `${a.color}22`,
+                                                                            borderColor: a.color,
+                                                                            color: a.color,
+                                                                        }
                                                                         : undefined;
                                                                     return (
                                                                         <div
@@ -353,7 +390,8 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                                             </div>
                                         ))}
                                     </div>
-                                </div>
+                                    <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
                             </div>
 
                             {/* Mobile/Tablet: Row layout */}
@@ -369,10 +407,10 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                                                         {timeActivities.map((a) => {
                                                             const cardStyle = a.color
                                                                 ? {
-                                                                      backgroundColor: `${a.color}22`,
-                                                                      borderColor: a.color,
-                                                                      color: a.color,
-                                                                  }
+                                                                    backgroundColor: `${a.color}22`,
+                                                                    borderColor: a.color,
+                                                                    color: a.color,
+                                                                }
                                                                 : undefined;
                                                             return (
                                                                 <div
@@ -396,7 +434,7 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                         </div>
                     </div>
                     {showToggle && !expanded && (
-                        <BlurEffect position="bottom" intensity={80} className="ointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0B0F12] via-[#0B0F12]/60 to-transparent" />
+                        <BlurEffect position="bottom" intensity={80} className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0B0F12] via-[#0B0F12]/60 to-transparent" />
                     )}
                 </div>
                 {showToggle && (
@@ -413,7 +451,7 @@ export default function Planning({ data }: { data: PlanningResponse }) {
                 )}
             </div>
 
-        </section>
+        </section >
     )
 
 }

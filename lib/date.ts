@@ -1,4 +1,5 @@
 import { format, getDay, getYear } from "date-fns";
+import { cache } from "react";
 
 export const getFirstDayOfWeek = () => {
   const today = new Date();
@@ -7,7 +8,7 @@ export const getFirstDayOfWeek = () => {
   return new Date(today.setDate(diff));
 };
 
-export const fetchPlanning = async () => {
+export const fetchPlanning = cache(async () => {
   const firstDayOfWeek = getFirstDayOfWeek();
 
   const response = await fetch(
@@ -21,4 +22,4 @@ export const fetchPlanning = async () => {
   );
 
   return response.json();
-};
+});

@@ -5,8 +5,8 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CrossFit Aslak",
-  description: "Box de CrossFit à Carrières-sur-Seine (78)",
+  title: "CrossFit ASLAK - Box de CrossFit - Train The Fighter In You",
+  description: "Entraînement de CrossFit à Carrières-Sur-Seine (Yvelines). Découvrez lors de votre séance d'essai gratuite le CrossFit et l'Hyrox, nous sommes ouverts tous les jours.",
 };
 
 export default async function RootLayout({

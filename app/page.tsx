@@ -1,7 +1,10 @@
-"use cache";
-
-import Planning from '@/components/planning';
-import { fetchPlanning } from '@/lib/date';
+import { Footer } from '@/components/footer';
+import { FooterSkeleton } from '@/components/footer-skeleton';
+import PlanningSkeleton from '@/components/planning-skeleton';
+import { PlanningWrapper } from '@/components/planning-wrapper';
+import ModernPricingTable from '@/components/ui/modern-pricing-table';
+import { plans } from '@/lib/config';
+import { Suspense } from 'react';
 
 // ------------------------------------------------------------
 // CrossFit Aslak — Landing v1
@@ -9,31 +12,6 @@ import { fetchPlanning } from '@/lib/date';
 // Design language : dark mode, gradients néon (vert/bleu), cartes glassmorphism, CTA collant.
 // ------------------------------------------------------------
 
-const plans = [
-  {
-    name: "Illimité",
-    price: "129€ / mois",
-    bullets: [
-      "Accès illimité WOD & Open Gym",
-      "Suivi perf. & programmation",
-      "Pause possible 1x/mois",
-    ],
-    cta: { label: "S'abonner", emphasis: true },
-    tag: "Meilleur choix",
-  },
-  {
-    name: "3x / semaine",
-    price: "99€ / mois",
-    bullets: ["12 séances / mois", "Réservation 7j à l'avance", "WOD & Haltéro"],
-    cta: { label: "S'abonner", emphasis: false },
-  },
-  {
-    name: "Drop‑in",
-    price: "20€ / séance",
-    bullets: ["Accès 1 séance", "Pour visiteurs / essai"],
-    cta: { label: "Séance d'essai", emphasis: false },
-  },
-];
 
 const coaches = [
   { nom: "Nina", role: "Head Coach", badges: ["CF-L2", "Gym"], color: "from-fuchsia-500 to-violet-600" },
@@ -69,8 +47,6 @@ const partners = [
 ];
 
 export default async function AslakLanding() {
-
-  const planning = await fetchPlanning();
 
   return (
     <div className="min-h-screen bg-[#0B0F12] text-white antialiased">
@@ -137,42 +113,15 @@ export default async function AslakLanding() {
       </header>
 
       {/* PLANNING */}
-      <Planning data={planning} />
+      <Suspense fallback={<PlanningSkeleton />}>
+        <PlanningWrapper />
+      </Suspense>
 
 
       {/* PRICING */}
       <section id="pricing" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Prix & abonnements</h2>
-          <p className="mt-2 text-white/70">Transparence totale. Choisissez votre rythme, commencez par une séance d'essai gratuite.</p>
-        </div>
-
-        <div className="mt-10 grid lg:grid-cols-3 gap-6">
-          {plans.map((p, i) => (
-            <div key={i} className={`relative rounded-3xl p-6 ring-1 ring-white/10 bg-white/5 ${p.tag ? 'lg:scale-[1.02] lg:-translate-y-1' : ''}`}>
-              {p.tag && (
-                <div className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-lime-400 to-emerald-500 px-3 py-1 text-xs font-bold text-black shadow">{p.tag}</div>
-              )}
-              <div className="text-xl font-semibold">{p.name}</div>
-              <div className="mt-2 text-3xl font-black">{p.price}</div>
-              <ul className="mt-4 space-y-2 text-white/80">
-                {p.bullets.map((b, j) => (
-                  <li key={j} className="flex items-start gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-emerald-400" /> {b}</li>
-                ))}
-              </ul>
-              <button className={`mt-6 w-full rounded-xl px-5 py-3 font-semibold ${p.cta.emphasis ? 'bg-gradient-to-r from-lime-400 to-emerald-500 text-black' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
-                {p.cta.label}
-              </button>
-              <div className="mt-3 flex items-center justify-center gap-3 text-xs text-white/50">
-                <span>Paiement sécurisé</span>
-                <span>•</span>
-                <span>Apple Pay • CB • SEPA</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 text-center text-sm text-white/60">Frais d'inscription offerts ce mois‑ci • Résiliation 100% en ligne</div>
+        <ModernPricingTable plans={plans} />
+        <div className="mt-8 text-center text-sm text-white/60">Forces de l'ordre (police, pompiers, militaires): -10% sur votre abonnement <span className="italic">(sans engagement)</span></div>
       </section>
 
       {/* COACHS */}
@@ -249,16 +198,10 @@ export default async function AslakLanding() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 text-sm text-white/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>© {new Date().getFullYear()} CrossFit Aslak — Tous droits réservés.</div>
-          <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-white">Instagram</a>
-            <a href="#" className="hover:text-white">Facebook</a>
-            <a href="#" className="hover:text-white">Contact</a>
-          </div>
-        </div>
-      </footer>
+      <Suspense fallback={<FooterSkeleton />}>
+        <Footer />
+      </Suspense>
+
     </div>
   );
 }

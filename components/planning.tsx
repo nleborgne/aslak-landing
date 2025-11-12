@@ -276,7 +276,7 @@ export default function Planning({ data }: { data: PlanningResponse }) {
         <section id="planning" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
             <div className="flex items-end justify-between gap-6 flex-wrap">
                 <div>
-                    <h2 className="text-3xl font-bold">Live Planning</h2>
+                    <h2 className="text-3xl font-bold">Planning de la semaine</h2>
                     <p className="mt-1 text-white/70">Filtrez par activité et réservez votre prochaine séance.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">

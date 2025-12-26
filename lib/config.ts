@@ -1,6 +1,6 @@
 import { type Plan } from "@/models/plan";
 
-export const plans: Plan[] = [
+export const PLANS: Plan[] = [
   {
     name: "Abonnement illimité",
     price: {
@@ -47,5 +47,41 @@ export const plans: Plan[] = [
     features: [],
     description: "Valable pendant 1 an",
     isFeatured: false,
+  },
+];
+
+export const REVIEWS_URL =
+  "https://www.google.com/search?q=CrossFit%20Aslak%20Reviews&rflfq=1&num=20&stick=H4sIAAAAAAAAAONgkxIxtDA2MTA1NzI1MzczMLIwMLUwNtvAyPiKUcy5KL-42C2zRMGxOCcxWyEotSwztbx4ESsOCQADJE_sTQAAAA&rldimm=18340572567602805836&tbm=lcl&hl=en&sa=X&ved=0CCMQ9fQKKABqFwoTCOiJyaqu1pEDFQAAAAAdAAAAABAG&biw=1708&bih=1328#lkt=LocalPoiReviews";
+
+export const COACHES = [
+  {
+    nom: "Alex",
+    role: "Head Coach",
+    badges: ["CF-L2", "Hyrox Foundation"],
+    color: "from-fuchsia-500 to-violet-600",
+  },
+  {
+    nom: "Cindy",
+    role: "Coach",
+    badges: ["CF-L1", "Hyrox Foundation"],
+    color: "from-emerald-500 to-teal-600",
+  },
+  {
+    nom: "Alix",
+    role: "Coach",
+    badges: ["CF-L1", "Hyrox Foundation"],
+    color: "from-sky-500 to-indigo-600",
+  },
+  {
+    nom: "Gauthier",
+    role: "Coach",
+    badges: ["CF-L1", "Hyrox Foundation"],
+    color: "from-amber-500 to-orange-600",
+  },
+  {
+    nom: "Alexandre",
+    role: "Coach",
+    badges: ["CF-L2", "Hyrox Level 1"],
+    color: "from-fuchsia-500 to-violet-600",
   },
 ];

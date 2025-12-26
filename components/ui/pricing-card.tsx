@@ -71,7 +71,7 @@ interface PricingCardProps {
 const PricingCard: React.FC<PricingCardProps> = ({ plan, index, commitment, cardVariants }) => {
   // Simple check icon for all features
   const getFeatureIcon = () => {
-    return <Check className="size-3 text-background" />
+    return <Check className="size-3 text-primary" />
   }
 
   return (
@@ -88,7 +88,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan, index, commitment, card
           transition={{ delay: 0.5 + index * 0.1, duration: 0.4 }}
           className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10"
         >
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 shadow-lg">
+          <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 shadow-lg shadow-primary/20">
             <Star className="size-3 fill-current" />
             Meilleur choix
           </div>
@@ -96,35 +96,35 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan, index, commitment, card
       )}
 
       <div className={`
-        relative h-full p-8 rounded-xl border-2 transition-all duration-300 
+        relative h-full p-8 rounded-xl border-2 transition-all duration-300
         ${plan.isFeatured
-          ? 'border-blue-500 bg-gradient-to-br from-blue-900 to-purple-900 dark:from-blue-950/20 dark:to-purple-950/20 dark:border-blue-400 shadow-lg'
-          : 'border-gray-600 dark:border-neutral-800 bg-neutral-900 dark:bg-neutral-900'
+          ? 'border-primary bg-primary/10 shadow-lg shadow-primary/10'
+          : 'border-border bg-card'
         }
       `}>
         {/* Plan Header */}
         <div className="text-center space-y-4 mb-8">
-          <h3 className="text-2xl font-bold text-background">{plan.name}</h3>
-          <p className="text-muted-background">{plan.description}</p>
+          <h3 className="text-2xl font-bold text-foreground">{plan.name}</h3>
+          <p className="text-muted-foreground">{plan.description}</p>
 
           {/* Animated Price with Scrolling Numbers */}
           <div className="space-y-2">
-            <div className="text-4xl font-bold text-background flex items-center justify-center">
+            <div className="text-4xl font-bold text-foreground flex items-center justify-center">
               <ScrollingNumber value={commitment !== "base" ? Math.round(plan.price[commitment]) : plan.price.base} /> €
-              {plan.billing === "monthly" && <span className="text-lg text-muted-background font-normal ml-1">
+              {plan.billing === "monthly" && <span className="text-lg text-muted-foreground font-normal ml-1">
                 / mois
               </span>}
             </div>
             <motion.div
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-sm text-muted-background flex items-center justify-center gap-2"
+              className="text-sm text-muted-foreground flex items-center justify-center gap-2"
             >
               {commitment !== "base" && plan.billing === "monthly" && (
                 <motion.span
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full font-medium"
+                  className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium"
                 >
                   Économisez {(plan.price.base - plan.price[commitment])} €
                 </motion.span>
@@ -146,7 +146,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan, index, commitment, card
               <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
                 {getFeatureIcon()}
               </div>
-              <span className="text-sm text-background">{feature}</span>
+              <span className="text-sm text-foreground">{feature}</span>
             </motion.div>
           ))}
         </div>

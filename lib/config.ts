@@ -1,5 +1,49 @@
 import { type Plan } from "@/models/plan";
 
+export type HomeType = "crossfit" | "hyrox";
+
+export type HomeContent = {
+  logo: string;
+  hero: {
+    title: string;
+    highlight: string;
+    description: string;
+  };
+  cta: {
+    primary: string;
+    secondary: string;
+  };
+};
+
+export const HOME_CONTENT: Record<HomeType, HomeContent> = {
+  crossfit: {
+    logo: "CROSSFIT ASLAK",
+    hero: {
+      title: "Libère",
+      highlight: "ta force",
+      description:
+        "Box CrossFit à l'esprit communautaire. Coaching exigeant & bienveillant, programmation orientée progrès, événements Aslak Contest.",
+    },
+    cta: {
+      primary: "Séance d'essai gratuite",
+      secondary: "Voir le planning",
+    },
+  },
+  hyrox: {
+    logo: "HYROX ASLAK",
+    hero: {
+      title: "Dépasse",
+      highlight: "tes limites",
+      description:
+        "Préparation Hyrox complète. Entraînements fonctionnels, running, et stations Hyrox pour performer le jour J.",
+    },
+    cta: {
+      primary: "Séance d'essai gratuite",
+      secondary: "Voir le planning",
+    },
+  },
+};
+
 export const PLANS: Plan[] = [
   {
     name: "Abonnement illimité",

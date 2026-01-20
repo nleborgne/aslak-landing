@@ -1,8 +1,14 @@
 import { Footer } from "@/components/footer";
 import { FooterSkeleton } from "@/components/footer-skeleton";
+import {
+  Logo,
+  HeroContent,
+  HeroCTA,
+  SecondaryCTA,
+  TypeSwitcher,
+} from "@/components/home-content";
 import PlanningSkeleton from "@/components/planning-skeleton";
 import { PlanningWrapper } from "@/components/planning-wrapper";
-import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 import ModernPricingTable from "@/components/ui/modern-pricing-table";
 import { COACHES, REVIEWS_URL } from "@/lib/config";
@@ -33,10 +39,10 @@ const reviews = [
 ];
 
 const partners = [
-  { name: "Rogue", short: "ROG" },
-  { name: "Reebok", short: "RBK" },
-  { name: "Wodify", short: "WDF" },
-  { name: "Nocco", short: "NCC" },
+  { name: "Rogue", logo: null, url: "https://www.rogueeurope.eu" },
+  { name: "Reebok", logo: null, url: "https://www.reebok.fr" },
+  { name: "Wodify", logo: null, url: "https://www.wodify.com" },
+  { name: "Nocco", logo: null, url: "https://nocco.com" },
 ];
 
 export default async function AslakLanding() {
@@ -51,7 +57,16 @@ export default async function AslakLanding() {
       {/* Sticky CTA bar */}
       <div className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40 bg-black/60 border-b border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-          <Logo />
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-3">
+                <div className="h-7 w-7 rounded-lg bg-primary" />
+                <span className="font-black tracking-tight">CROSSFIT ASLAK</span>
+              </div>
+            }
+          >
+            <Logo />
+          </Suspense>
           <nav className="ml-auto hidden md:flex items-center gap-6 text-sm text-white/80">
             <a href="#planning" className="hover:text-white">
               Planning
@@ -69,7 +84,9 @@ export default async function AslakLanding() {
               Partenaires
             </a>
           </nav>
-          <ThemeSwitch />
+          <Suspense fallback={null}>
+            <TypeSwitcher />
+          </Suspense>
           <Button>Réserver une séance d'essai</Button>
         </div>
       </div>
@@ -79,19 +96,34 @@ export default async function AslakLanding() {
         <header className="relative mx-auto py-20 sm:py-24">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
-              <h1 className="text-5xl sm:text-6xl font-black leading-[1.05]">
-                <span className="block">Libère</span>
-                <span className="block text-primary">ta force</span>
-              </h1>
-              <p className="mt-5 max-w-xl text-white/70">
-                Box CrossFit à l'esprit communautaire. Coaching exigeant &
-                bienveillant, programmation orientée progrès, événements{" "}
-                <span className="whitespace-nowrap">Aslak Contest</span>.
-              </p>
+              <Suspense
+                fallback={
+                  <>
+                    <h1 className="text-5xl sm:text-6xl font-black leading-[1.05]">
+                      <span className="block">Libère</span>
+                      <span className="block text-primary">ta force</span>
+                    </h1>
+                    <p className="mt-5 max-w-xl text-white/70">
+                      Box CrossFit à l'esprit communautaire. Coaching exigeant &
+                      bienveillant, programmation orientée progrès.
+                    </p>
+                  </>
+                }
+              >
+                <HeroContent />
+              </Suspense>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button>Séance d'essai gratuite</Button>
+                <Button>
+                  <Suspense fallback="Séance d'essai gratuite">
+                    <HeroCTA />
+                  </Suspense>
+                </Button>
                 <a href="/#planning">
-                  <Button variant="outline">Voir le planning</Button>
+                  <Button variant="outline">
+                    <Suspense fallback="Voir le planning">
+                      <SecondaryCTA />
+                    </Suspense>
+                  </Button>
                 </a>
               </div>
               <div className="mt-6 flex items-center gap-6 text-sm text-white/70">
@@ -220,27 +252,40 @@ export default async function AslakLanding() {
 
         {/* PARTENAIRES */}
         <section id="partners" className="py-20">
-          <div className="text-center">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold">Partenaires</h2>
             <p className="mt-2 text-white/70">
               Nos marques & outils de confiance.
             </p>
           </div>
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {partners.map((p, i) => (
-              <div
+              <a
                 key={i}
-                className="group relative rounded-2xl bg-white/5 p-6 ring-1 ring-white/10"
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative rounded-2xl bg-white/5 ring-1 ring-white/10 hover:ring-primary/30 hover:bg-white/[0.07] transition-all duration-300 overflow-hidden"
               >
-                <div className="mx-auto grid place-items-center h-16 w-full rounded-lg bg-gradient-to-r from-white/5 to-white/10">
-                  <span className="text-2xl font-black tracking-widest text-white/80 group-hover:text-white">
-                    {p.short}
-                  </span>
+                {/* Logo / Title */}
+                <div className="aspect-[3/2] bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center p-6">
+                  {p.logo ? (
+                    <img
+                      src={p.logo}
+                      alt={`${p.name} logo`}
+                      className="max-h-full max-w-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                    />
+                  ) : (
+                    <span className="text-xl font-bold uppercase tracking-wider text-white/70 group-hover:text-primary transition-colors">
+                      {p.name}
+                    </span>
+                  )}
                 </div>
-                <div className="mt-2 text-center text-sm text-white/60">
-                  {p.name}
-                </div>
-              </div>
+
+                {/* Hover Glow */}
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              </a>
             ))}
           </div>
         </section>
@@ -294,11 +339,3 @@ function Stars({ score = 5 }) {
   );
 }
 
-function Logo() {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="h-7 w-7 rounded-lg bg-primary" />
-      <span className="font-black tracking-tight">CROSSFIT ASLAK</span>
-    </div>
-  );
-}

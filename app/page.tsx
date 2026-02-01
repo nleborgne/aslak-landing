@@ -11,7 +11,7 @@ import PlanningSkeleton from "@/components/planning-skeleton";
 import { PlanningWrapper } from "@/components/planning-wrapper";
 import { Button } from "@/components/ui/button";
 import ModernPricingTable from "@/components/ui/modern-pricing-table";
-import { COACHES, REVIEWS_URL } from "@/lib/config";
+import { COACHES, PARTNERS, REVIEWS_URL } from "@/lib/config";
 import { Suspense } from "react";
 
 // ------------------------------------------------------------
@@ -38,13 +38,6 @@ const reviews = [
   },
 ];
 
-const partners = [
-  { name: "Rogue", logo: null, url: "https://www.rogueeurope.eu" },
-  { name: "Reebok", logo: null, url: "https://www.reebok.fr" },
-  { name: "Wodify", logo: null, url: "https://www.wodify.com" },
-  { name: "Nocco", logo: null, url: "https://nocco.com" },
-];
-
 export default async function AslakLanding() {
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
@@ -61,7 +54,9 @@ export default async function AslakLanding() {
             fallback={
               <div className="flex items-center gap-3">
                 <div className="h-7 w-7 rounded-lg bg-primary" />
-                <span className="font-black tracking-tight">CROSSFIT ASLAK</span>
+                <span className="font-black tracking-tight">
+                  CROSSFIT ASLAK
+                </span>
               </div>
             }
           >
@@ -75,7 +70,7 @@ export default async function AslakLanding() {
               Prix
             </a>
             <a href="#coachs" className="hover:text-white">
-              Coach
+              L'Équipe
             </a>
             <a href="#reviews" className="hover:text-white">
               Avis
@@ -128,9 +123,9 @@ export default async function AslakLanding() {
               </div>
               <div className="mt-6 flex items-center gap-6 text-sm text-white/70">
                 <div className="flex items-center gap-2">
-                  <Stars score={4.9} /> 4.9/5 • 320+ avis
+                  <Stars score={4.8} /> 4.8/5 • 175+ avis
                 </div>
-                <div>Paris Ouest • 400m² • Parking</div>
+                <div>Paris Ouest • 530m² • Parking</div>
               </div>
             </div>
 
@@ -173,9 +168,9 @@ export default async function AslakLanding() {
         <section id="coachs" className="py-20">
           <div className="flex items-end justify-between flex-wrap gap-6">
             <div>
-              <h2 className="text-3xl font-bold">Coach</h2>
+              <h2 className="text-3xl font-bold">L'Équipe</h2>
               <p className="mt-1 text-white/70">
-                Une équipe certifiée, experte et accessible.
+                Une équipe de coach certifiée, experte et accessible.
               </p>
             </div>
             <a href="#" className="text-sm text-white/80 hover:text-white">
@@ -189,9 +184,13 @@ export default async function AslakLanding() {
                 key={idx}
                 className="rounded-3xl ring-1 ring-white/10 bg-white/5 overflow-hidden"
               >
-                <div
-                  className={`h-40 bg-gradient-to-br ${c.color} opacity-80`}
-                />
+                <div className="aspect-[4/3] bg-white/5">
+                  <img
+                    src={c.image}
+                    alt={c.nom}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
                 <div className="p-5">
                   <div className="text-lg font-semibold">{c.nom}</div>
                   <div className="text-white/70 text-sm">{c.role}</div>
@@ -217,7 +216,7 @@ export default async function AslakLanding() {
             <h2 className="text-3xl font-bold">Avis Google</h2>
             <div className="mt-2 inline-flex items-center gap-3 rounded-full bg-white/5 px-4 py-2 ring-1 ring-white/10">
               <Stars score={4.8} /> <span className="font-semibold">4.8/5</span>
-              <span className="text-white/70">(174+ avis)</span>
+              <span className="text-white/70">(175+ avis)</span>
             </div>
             <p className="mt-2 text-white/70">
               Ce que la communauté dit de nous.
@@ -260,7 +259,7 @@ export default async function AslakLanding() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {partners.map((p, i) => (
+            {PARTNERS.map((p, i) => (
               <a
                 key={i}
                 href={p.url}
@@ -277,7 +276,7 @@ export default async function AslakLanding() {
                       className="max-h-full max-w-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
                     />
                   ) : (
-                    <span className="text-xl font-bold uppercase tracking-wider text-white/70 group-hover:text-primary transition-colors">
+                    <span className="text-xl text-center font-bold uppercase tracking-wider text-white/70 group-hover:text-primary transition-colors">
                       {p.name}
                     </span>
                   )}
@@ -338,4 +337,3 @@ function Stars({ score = 5 }) {
     </div>
   );
 }
-

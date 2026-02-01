@@ -102,30 +102,47 @@ export const COACHES = [
     nom: "Alex",
     role: "Head Coach",
     badges: ["CF-L2", "Hyrox Foundation"],
-    color: "from-fuchsia-500 to-violet-600",
-  },
-  {
-    nom: "Cindy",
-    role: "Coach",
-    badges: ["CF-L1", "Hyrox Foundation"],
-    color: "from-emerald-500 to-teal-600",
-  },
-  {
-    nom: "Alix",
-    role: "Coach",
-    badges: ["CF-L1", "Hyrox Foundation"],
-    color: "from-sky-500 to-indigo-600",
-  },
-  {
-    nom: "Gauthier",
-    role: "Coach",
-    badges: ["CF-L1", "Hyrox Foundation"],
-    color: "from-amber-500 to-orange-600",
+    image: "/coach/alex.webp",
   },
   {
     nom: "Alexandre",
     role: "Coach",
     badges: ["CF-L2", "Hyrox Level 1"],
-    color: "from-fuchsia-500 to-violet-600",
+    image: "/coach/alex-trainer.webp",
+  },
+  {
+    nom: "Alix",
+    role: "Coach",
+    badges: ["CF-L1", "Hyrox Foundation"],
+    image: "/coach/alix.webp",
+  },
+  {
+    nom: "Amélie",
+    role: "Coach",
+    badges: ["CF-L1"],
+    image: "/coach/amelie.webp",
+  },
+  {
+    nom: "Cindy",
+    role: "Coach",
+    badges: ["CF-L1", "Hyrox Foundation"],
+    image: "/coach/cindy.webp",
+  },
+  {
+    nom: "Gauthier",
+    role: "Coach",
+    badges: ["CF-L1", "Hyrox Foundation"],
+    image: "/coach/gauthier.webp",
+  },
+];
+
+export const PARTNERS = [
+  { name: "CompRank", logo: null, url: "https://comprank.fr/" },
+  { name: "Healthy Life", logo: null, url: "https://healthy-life.fr/" },
+  { name: "Fit Aid", logo: null, url: "https://www.lifeaidbevco.eu/fr/" },
+  {
+    name: "Training Distribution",
+    logo: null,
+    url: "https://www.training-distribution.com/fr/",
   },
 ];

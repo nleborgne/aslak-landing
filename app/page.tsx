@@ -1,11 +1,10 @@
 import { Footer } from "@/components/footer";
 import { FooterSkeleton } from "@/components/footer-skeleton";
+import { Header } from "@/components/header";
 import {
-  Logo,
   HeroContent,
   HeroCTA,
   SecondaryCTA,
-  TypeSwitcher,
 } from "@/components/home-content";
 import PlanningSkeleton from "@/components/planning-skeleton";
 import { PlanningWrapper } from "@/components/planning-wrapper";
@@ -47,44 +46,7 @@ export default async function AslakLanding() {
         <div className="absolute top-40 right-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      {/* Sticky CTA bar */}
-      <div className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-black/40 bg-black/60 border-b border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-          <Suspense
-            fallback={
-              <div className="flex items-center gap-3">
-                <div className="h-7 w-7 rounded-lg bg-primary" />
-                <span className="font-black tracking-tight">
-                  CROSSFIT ASLAK
-                </span>
-              </div>
-            }
-          >
-            <Logo />
-          </Suspense>
-          <nav className="ml-auto hidden md:flex items-center gap-6 text-sm text-white/80">
-            <a href="#planning" className="hover:text-white">
-              Planning
-            </a>
-            <a href="#pricing" className="hover:text-white">
-              Prix
-            </a>
-            <a href="#coachs" className="hover:text-white">
-              L'Équipe
-            </a>
-            <a href="#reviews" className="hover:text-white">
-              Avis
-            </a>
-            <a href="#partners" className="hover:text-white">
-              Partenaires
-            </a>
-          </nav>
-          <Suspense fallback={null}>
-            <TypeSwitcher />
-          </Suspense>
-          <Button>Réserver une séance d'essai</Button>
-        </div>
-      </div>
+      <Header />
 
       <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
         {/* HERO */}
@@ -310,9 +272,8 @@ function Stars({ score = 5 }) {
         <span
           key={i}
           aria-hidden
-          className={`inline-block h-4 w-4 ${
-            t === "empty" ? "opacity-30" : ""
-          }`}
+          className={`inline-block h-4 w-4 ${t === "empty" ? "opacity-30" : ""
+            }`}
         >
           {t === "half" ? (
             <svg viewBox="0 0 24 24" fill="currentColor">

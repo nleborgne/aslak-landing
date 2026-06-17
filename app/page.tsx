@@ -1,15 +1,10 @@
 import { Footer } from "@/components/footer";
 import { FooterSkeleton } from "@/components/footer-skeleton";
 import { Header } from "@/components/header";
-import {
-  HeroContent,
-  HeroCTA,
-  SecondaryCTA,
-} from "@/components/home-content";
 import PlanningSkeleton from "@/components/planning-skeleton";
 import { PlanningWrapper } from "@/components/planning-wrapper";
-import { Button } from "@/components/ui/button";
-import ModernPricingTable from "@/components/ui/modern-pricing-table";
+import { HeroFullBleed } from "@/components/hero-variants";
+import { PricingGrouped } from "@/components/ui/pricing-variants";
 import { COACHES, PARTNERS, REVIEWS_URL } from "@/lib/config";
 import { Suspense } from "react";
 
@@ -48,70 +43,12 @@ export default async function AslakLanding() {
 
       <Header />
 
+      {/* HERO */}
+      <Suspense fallback={<div className="min-h-[88svh] sm:min-h-[600px]" />}>
+        <HeroFullBleed />
+      </Suspense>
+
       <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
-        {/* HERO */}
-        <header className="relative mx-auto py-20 sm:py-24">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <Suspense
-                fallback={
-                  <>
-                    <h1 className="text-5xl sm:text-6xl font-black leading-[1.05]">
-                      <span className="block">Libère</span>
-                      <span className="block text-primary">ta force</span>
-                    </h1>
-                    <p className="mt-5 max-w-xl text-white/70">
-                      Box CrossFit à l'esprit communautaire. Coaching exigeant &
-                      bienveillant, programmation orientée progrès.
-                    </p>
-                  </>
-                }
-              >
-                <HeroContent />
-              </Suspense>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button>
-                  <Suspense fallback="Séance d'essai gratuite">
-                    <HeroCTA />
-                  </Suspense>
-                </Button>
-                <a href="/#planning">
-                  <Button variant="outline">
-                    <Suspense fallback="Voir le planning">
-                      <SecondaryCTA />
-                    </Suspense>
-                  </Button>
-                </a>
-              </div>
-              <div className="mt-6 flex items-center gap-6 text-sm text-white/70">
-                <div className="flex items-center gap-2">
-                  <Stars score={4.8} /> 4.8/5 • 175+ avis
-                </div>
-                <div>Paris Ouest • 530m² • Parking</div>
-              </div>
-            </div>
-
-            {/* Visual */}
-            <div className="relative h-72 sm:h-96 lg:h-[28rem]">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/10 to-white/0 ring-1 ring-border overflow-hidden">
-                <div className="absolute inset-0 bg-primary/10" />
-                <div className="absolute inset-0 grid place-items-center">
-                  <div className="aspect-video w-11/12 rounded-2xl bg-black/50 ring-1 ring-white/10 grid place-items-center">
-                    <div className="text-center">
-                      <div className="text-white/60 text-xs uppercase tracking-widest">
-                        Hero vidéo
-                      </div>
-                      <div className="mt-1 text-white/80 text-sm">
-                        (mettez ici un reel Instagram / vidéo WOD)
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
         {/* PLANNING */}
         <Suspense fallback={<PlanningSkeleton />}>
           <PlanningWrapper />
@@ -119,7 +56,7 @@ export default async function AslakLanding() {
 
         {/* PRICING */}
         <section id="pricing" className="py-20">
-          <ModernPricingTable />
+          <PricingGrouped />
           <div className="mt-8 text-center text-sm text-white/60">
             Forces de l'ordre (police, pompiers, militaires): -10% sur votre
             abonnement <span className="italic">(sans engagement)</span>
@@ -135,9 +72,11 @@ export default async function AslakLanding() {
                 Une équipe de coach certifiée, experte et accessible.
               </p>
             </div>
+            {/* CTA désactivé
             <a href="#" className="text-sm text-white/80 hover:text-white">
               Voir la programmation & méthodo →
             </a>
+            */}
           </div>
 
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

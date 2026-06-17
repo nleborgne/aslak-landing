@@ -115,7 +115,7 @@ export function Header() {
             <Suspense fallback={<TypeSwitcherFallback />}>
               <TypeSwitcher />
             </Suspense>
-            <Button>{"Réserver une séance d\u2019essai"}</Button>
+            {/* CTA désactivé — <Button>{"Réserver une séance d\u2019essai"}</Button> */}
           </div>
 
           {/* Mobile menu button */}
@@ -177,6 +177,7 @@ export function Header() {
               ))}
             </nav>
             <div className="px-4 pt-3">
+              {/* CTA désactivé
               <Button
                 onClick={() => scrollToSection("pricing")}
                 className="w-full"
@@ -184,6 +185,7 @@ export function Header() {
                 <span className="sm:hidden">{"Réserver"}</span>
                 <span className="hidden sm:inline">{"Réserver une séance d\u2019essai"}</span>
               </Button>
+              */}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useQueryState, parseAsStringLiteral } from "nuqs";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -86,12 +87,21 @@ export function TypeSwitcher() {
 }
 
 export function Logo() {
-  const content = useHomeContent();
   return (
-    <div className="flex items-center gap-3">
-      <div className="h-7 w-7 rounded-lg bg-primary" />
-      <span className="font-black tracking-tight">{content.logo}</span>
-    </div>
+    <a
+      href="#"
+      aria-label="CrossFit ASLAK - Accueil"
+      className="flex items-center"
+    >
+      <Image
+        src="/aslaklogo.svg"
+        alt="CrossFit ASLAK"
+        width={16}
+        height={16}
+        priority
+        className="h-11 w-auto"
+      />
+    </a>
   );
 }
 

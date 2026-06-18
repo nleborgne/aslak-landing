@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useHomeType } from "@/components/home-content";
 
 type Activity = {
   id_activity_calendar: number;
@@ -35,6 +36,14 @@ const FULL_DAYS = [
   "Vendredi",
   "Samedi",
 ];
+
+function isHyrox(name: string): boolean {
+  return name.toLowerCase().includes("hyrox");
+}
+
+function isOpenBox(name: string): boolean {
+  return name.toLowerCase().includes("open box");
+}
 
 function parseTimestamp(ts: string): Date | null {
   // Replace space with 'T' for Safari/iOS parsing
@@ -92,23 +101,45 @@ type DayGroup = {
 };
 
 export default function Planning({ data }: { data: PlanningResponse }) {
+  const [type] = useHomeType();
   const [filter, setFilter] = useState("Tous");
   const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 
+  // Scope the whole planning to the active discipline (CrossFit vs Hyrox).
+  // No type field on the API, so classify by name: anything containing
+  // "hyrox" is Hyrox, everything else is CrossFit. Open Box is shared
+  // (open gym) -> it shows under both disciplines.
+  const disciplineActivities = useMemo(
+    () =>
+      data.data.activities_calendar.filter((a) =>
+        type === "hyrox"
+          ? isHyrox(a.name_activity) || isOpenBox(a.name_activity)
+          : !isHyrox(a.name_activity)
+      ),
+    [data.data.activities_calendar, type]
+  );
+
+  // Reset the activity chip when switching discipline so a stale CrossFit
+  // selection (e.g. "WOD") doesn't blank out the Hyrox list.
+  useEffect(() => {
+    setFilter("Tous");
+  }, [type]);
+
   const filters = useMemo(() => {
     const names = Array.from(
-      new Set(data.data.activities_calendar.map((a) => a.name_activity))
+      new Set(disciplineActivities.map((a) => a.name_activity))
     );
     return ["Tous", ...names];
-  }, [data.data.activities_calendar]);
+  }, [disciplineActivities]);
 
-  // Weeks are built from ALL activities so the day navigator stays stable
-  // regardless of the active activity filter (which only refines the day list).
+  // Weeks are built from the discipline-scoped set, so the day navigator only
+  // surfaces days that the active discipline actually runs. The chip filter
+  // below only refines the selected day's list.
   const weeks = useMemo(() => {
     const weekMap = new Map<string, { start: Date; activities: Activity[] }>();
 
-    data.data.activities_calendar.forEach((activity) => {
+    disciplineActivities.forEach((activity) => {
       const startDate = parseTimestamp(activity.start_timestamp);
       if (!startDate) return;
       const weekStart = getStartOfWeek(startDate);
@@ -129,7 +160,7 @@ export default function Planning({ data }: { data: PlanningResponse }) {
         label: formatWeekRange(group.start),
         activities: group.activities,
       }));
-  }, [data.data.activities_calendar]);
+  }, [disciplineActivities]);
 
   const currentWeek = weeks[currentWeekIndex] ?? null;
   const currentWeekActivities = currentWeek?.activities ?? [];
@@ -273,29 +304,32 @@ export default function Planning({ data }: { data: PlanningResponse }) {
             })}
           </div>
 
-          {/* ===== Activity filter chips (shared) ===== */}
-          <ScrollArea orientation="horizontal" className="mt-6 w-full">
-            <div className="flex w-max gap-2 pb-3">
-              {filters.map((f) => {
-                const active = f === filter;
-                return (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setFilter(f)}
-                    aria-pressed={active}
-                    className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
-                      active
-                        ? "bg-white text-black"
-                        : "bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10"
-                    }`}
-                  >
-                    {f}
-                  </button>
-                );
-              })}
-            </div>
-          </ScrollArea>
+          {/* ===== Activity filter chips (hidden when the discipline has a
+                   single activity name, e.g. Hyrox -> only "HYROX Training") ===== */}
+          {filters.length > 2 && (
+            <ScrollArea orientation="horizontal" className="mt-6 w-full">
+              <div className="flex w-max gap-2 pb-3">
+                {filters.map((f) => {
+                  const active = f === filter;
+                  return (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => setFilter(f)}
+                      aria-pressed={active}
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+                        active
+                          ? "bg-white text-black"
+                          : "bg-white/5 text-white/70 ring-1 ring-white/10 hover:bg-white/10"
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          )}
 
           {/* ===== Selected day list (shared, flat chronological) ===== */}
           <div className="mt-6">

@@ -1,6 +1,6 @@
 "use server";
 
-import { Resend } from "resend";
+import { Resend, type CreateEmailRequestOptions } from "resend";
 import { trialRequestSchema, type TrialRequest } from "@/lib/trial-request";
 
 export async function sendTrialRequest(
@@ -24,24 +24,29 @@ export async function sendTrialRequest(
   }
 
   const resend = new Resend(apiKey);
-  const { error } = await resend.emails.send({
-    from:
-      process.env.TRIAL_REQUEST_FROM ??
-      "CrossFit ASLAK <onboarding@resend.dev>",
-    to: process.env.TRIAL_REQUEST_TO ?? "contact@crossfitaslak.com",
-    replyTo: email,
-    subject: `Nouvelle demande de séance d'essai — ${name}`,
-    text: [
-      "Nouvelle demande de séance d'essai gratuite",
-      "",
-      `Nom : ${name}`,
-      `Email : ${email}`,
-      `Téléphone : ${phone}`,
-      `Intérêt : ${interest === "hyrox" ? "Hyrox" : "CrossFit"}`,
-      "",
-      "Envoyée depuis crossfitaslak.com",
-    ].join("\n"),
-  });
+  const { error } = await resend.emails.send(
+    {
+      from:
+        process.env.TRIAL_REQUEST_FROM ??
+        "CrossFit ASLAK <onboarding@resend.dev>",
+      to: process.env.TRIAL_REQUEST_TO ?? "contact@crossfitaslak.com",
+      replyTo: email,
+      subject: `Nouvelle demande de séance d'essai — ${name}`,
+      text: [
+        "Nouvelle demande de séance d'essai gratuite",
+        "",
+        `Nom : ${name}`,
+        `Email : ${email}`,
+        `Téléphone : ${phone}`,
+        `Intérêt : ${interest === "hyrox" ? "Hyrox" : "CrossFit"}`,
+        "",
+        "Envoyée depuis crossfitaslak.com",
+      ].join("\n"),
+    },
+    // Resend applies no default timeout; its option types don't declare
+    // `signal` but it forwards request options to native fetch.
+    { signal: AbortSignal.timeout(15_000) } as unknown as CreateEmailRequestOptions
+  );
 
   if (error) {
     console.error("Resend error:", error);

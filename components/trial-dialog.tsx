@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { sendTrialRequest } from "@/app/actions/trial-request";
 import { trialRequestSchema, type TrialRequest } from "@/lib/trial-request";
 import { useHomeType } from "@/components/home-content";
+import { TrialSuccess } from "@/components/trial-success";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -176,22 +177,7 @@ export function TrialDialog({ children }: { children: React.ReactNode }) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-md">
         {sent ? (
-          <div className="flex flex-col items-center py-6 text-center">
-            <CheckCircle2 className="size-12 text-primary" />
-            <DialogTitle className="mt-4">Demande envoyée</DialogTitle>
-            <DialogDescription className="mt-2 max-w-[36ch]">
-              Merci ! Nous vous recontactons rapidement pour planifier votre
-              séance d&rsquo;essai gratuite.
-            </DialogDescription>
-            <Button
-              type="button"
-              variant="secondary"
-              className="mt-6"
-              onClick={() => setOpen(false)}
-            >
-              Fermer
-            </Button>
-          </div>
+          <TrialSuccess variant="dialog" onClose={() => setOpen(false)} />
         ) : (
           <>
             <DialogHeader>

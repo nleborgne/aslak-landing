@@ -2,6 +2,7 @@
 
 import { useHomeContent } from "@/components/home-content";
 import { Button } from "@/components/ui/button";
+import { TrialDialog } from "@/components/trial-dialog";
 
 // Shared inline star rating (mobile-first, brand-colored)
 function Stars({ score = 4.8 }: { score?: number }) {
@@ -61,18 +62,18 @@ export function HeroFullBleed() {
         <p className="mt-5 max-w-[48ch] text-lg text-pretty text-foreground/80">
           {content.hero.description}
         </p>
-        {/* CTA désactivé
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button size="lg" className="w-full sm:w-auto">
-            {content.cta.primary}
-          </Button>
+          <TrialDialog>
+            <Button size="lg" className="w-full sm:w-auto">
+              {content.cta.primary}
+            </Button>
+          </TrialDialog>
           <a href="/#planning" className="w-full sm:w-auto">
             <Button variant="ghost" size="lg" className="w-full">
               {content.cta.secondary}
             </Button>
           </a>
         </div>
-        */}
         <div className="mt-7 flex items-center gap-2 text-sm text-foreground/80">
           <Stars score={4.8} />
           <span className="font-semibold text-foreground">4.8/5</span>

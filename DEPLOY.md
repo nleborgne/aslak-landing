@@ -199,8 +199,34 @@ curl -I https://www.crossfitaslak.com    # 301 → apex
 
 - **Dead form** — `app/cf-form/page.tsx` `onSubmit` only `console.log`s + shows a "Formulaire envoyé !" toast. Leads are **not** captured and the toast is misleading. Don't push `/cf-form` in ads until wired. Fix options: form-to-email service (Web3Forms/Formspree, no backend) or a Next route handler (`app/api/lead/route.ts`) + email/DB.
 
+## Auto-deploy (GitHub Actions)
+
+`.github/workflows/deploy.yml` runs on every push to `main` (which includes PR merges): it SSHes into the VPS and runs the same `deploy.sh`.
+
+One-time setup:
+
+```bash
+# 1. Generate a dedicated CI key pair (on your Mac; no passphrase)
+ssh-keygen -t ed25519 -f ci_deploy_key -N "" -C "github-actions-deploy"
+
+# 2. Authorize it on the VPS
+ssh-copy-id -i ci_deploy_key.pub debian@54.38.182.13
+
+# 3. Add repo secrets (GitHub → Settings → Secrets and variables → Actions)
+gh secret set DEPLOY_SSH_KEY < ci_deploy_key
+gh secret set DEPLOY_HOST --body "54.38.182.13"
+gh secret set DEPLOY_USER --body "debian"
+ssh-keyscan -t ed25519 54.38.182.13 | gh secret set DEPLOY_KNOWN_HOSTS
+
+# 4. Delete the local copy of the private key
+rm ci_deploy_key ci_deploy_key.pub
+```
+
+- [ ] CI key authorized on VPS
+- [ ] 4 repo secrets set (`DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_KNOWN_HOSTS`)
+- [ ] workflow green after a test merge to `main`
+
 ## Later / nice-to-have
 
-- **Auto-deploy**: GitHub Actions on push to `main` → SSH in → run the same `deploy.sh`. Store the SSH key as a repo secret.
 - **Backups / snapshots**: enable OVH automated snapshots.
 - **Monitoring**: uptime check on `https://crossfitaslak.com`.

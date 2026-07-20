@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo, TypeSwitcher } from "@/components/home-content";
+import { TrialDialog } from "@/components/trial-dialog";
 import { Menu, X } from "lucide-react";
 
 function LogoFallback() {
@@ -115,7 +116,9 @@ export function Header() {
             <Suspense fallback={<TypeSwitcherFallback />}>
               <TypeSwitcher />
             </Suspense>
-            {/* CTA désactivé — <Button>{"Réserver une séance d\u2019essai"}</Button> */}
+            <TrialDialog>
+              <Button>{"Réserver une séance d\u2019essai"}</Button>
+            </TrialDialog>
           </div>
 
           {/* Mobile menu button */}
@@ -177,15 +180,12 @@ export function Header() {
               ))}
             </nav>
             <div className="px-4 pt-3">
-              {/* CTA désactivé
-              <Button
-                onClick={() => scrollToSection("pricing")}
-                className="w-full"
-              >
-                <span className="sm:hidden">{"Réserver"}</span>
-                <span className="hidden sm:inline">{"Réserver une séance d\u2019essai"}</span>
-              </Button>
-              */}
+              <TrialDialog>
+                <Button onClick={closeMenu} className="w-full">
+                  <span className="sm:hidden">{"Réserver"}</span>
+                  <span className="hidden sm:inline">{"Réserver une séance d\u2019essai"}</span>
+                </Button>
+              </TrialDialog>
             </div>
           </div>
         </div>

@@ -5,7 +5,10 @@ import { trialRequestSchema, type TrialRequest } from "@/lib/trial-request";
 
 export async function sendTrialRequest(
   input: TrialRequest
-): Promise<{ ok: boolean }> {
+): Promise<
+  | { ok: false }
+  | { ok: true; conversionTransactionId: string | null }
+> {
   const parsed = trialRequestSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false };
@@ -14,7 +17,8 @@ export async function sendTrialRequest(
   const { name, email, phone, interest, company } = parsed.data;
 
   if (company) {
-    return { ok: true };
+    // Keep the anti-spam response indistinguishable in the UI, but never count it.
+    return { ok: true, conversionTransactionId: null };
   }
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -53,5 +57,5 @@ export async function sendTrialRequest(
     return { ok: false };
   }
 
-  return { ok: true };
+  return { ok: true, conversionTransactionId: crypto.randomUUID() };
 }

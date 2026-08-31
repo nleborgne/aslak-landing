@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { trackTrialRequestConversion } from "@/lib/google-tag";
 
 const TITLE = "Demande envoyée";
 const DESCRIPTION =
@@ -10,11 +12,25 @@ const DESCRIPTION =
 
 export function TrialSuccess({
   variant,
+  conversionTransactionId,
   onClose,
 }: {
   variant: "page" | "dialog";
+  conversionTransactionId: string | null;
   onClose?: () => void;
 }) {
+  const trackedTransactionId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (
+      conversionTransactionId &&
+      trackedTransactionId.current !== conversionTransactionId
+    ) {
+      trackedTransactionId.current = conversionTransactionId;
+      trackTrialRequestConversion(conversionTransactionId);
+    }
+  }, [conversionTransactionId]);
+
   if (variant === "dialog") {
     return (
       <div className="flex flex-col items-center py-6 text-center">

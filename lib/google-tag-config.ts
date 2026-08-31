@@ -1,0 +1,4 @@
+export const GOOGLE_TAG_ID = "GT-55BQG62";
+export const GA4_MEASUREMENT_ID = "G-23C8E5CCLW";
+export const GOOGLE_ADS_ID = "AW-770877416";
+export const GOOGLE_ADS_TRIAL_CONVERSION_LABEL = "MmfbCMjcyukcEOjPyu8C";

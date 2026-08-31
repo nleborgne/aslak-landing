@@ -33,7 +33,11 @@ function formatPhone(value: string): string {
   return parts ? parts.join(" ") : digits;
 }
 
-export function TrialForm({ onSuccess }: { onSuccess?: () => void }) {
+export function TrialForm({
+  onSuccess,
+}: {
+  onSuccess?: (conversionTransactionId: string | null) => void;
+}) {
   const [type] = useHomeType();
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
 
@@ -51,9 +55,9 @@ export function TrialForm({ onSuccess }: { onSuccess?: () => void }) {
   async function onSubmit(data: TrialRequest) {
     setStatus("sending");
     try {
-      const { ok } = await sendTrialRequest({ ...data, interest: type });
-      if (ok) {
-        onSuccess?.();
+      const result = await sendTrialRequest({ ...data, interest: type });
+      if (result.ok) {
+        onSuccess?.(result.conversionTransactionId);
         return;
       }
       setStatus("error");
@@ -163,12 +167,14 @@ export function TrialForm({ onSuccess }: { onSuccess?: () => void }) {
 
 export function TrialDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [submission, setSubmission] = useState<{
+    conversionTransactionId: string | null;
+  } | null>(null);
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
     if (next) {
-      setSent(false);
+      setSubmission(null);
     }
   }
 
@@ -176,8 +182,12 @@ export function TrialDialog({ children }: { children: React.ReactNode }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-md">
-        {sent ? (
-          <TrialSuccess variant="dialog" onClose={() => setOpen(false)} />
+        {submission ? (
+          <TrialSuccess
+            variant="dialog"
+            conversionTransactionId={submission.conversionTransactionId}
+            onClose={() => setOpen(false)}
+          />
         ) : (
           <>
             <DialogHeader>
@@ -187,7 +197,11 @@ export function TrialDialog({ children }: { children: React.ReactNode }) {
                 recontactons pour fixer un créneau.
               </DialogDescription>
             </DialogHeader>
-            <TrialForm onSuccess={() => setSent(true)} />
+            <TrialForm
+              onSuccess={(conversionTransactionId) =>
+                setSubmission({ conversionTransactionId })
+              }
+            />
           </>
         )}
       </DialogContent>

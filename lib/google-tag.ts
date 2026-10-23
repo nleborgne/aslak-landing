@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-function getGtag() {
+export function getGtag() {
   if (typeof window === "undefined") {
     return undefined;
   }

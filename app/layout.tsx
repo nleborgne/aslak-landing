@@ -4,6 +4,8 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleTag } from "@/components/google-tag";
+import { MetaPixel } from "@/components/meta-pixel";
+import { CookieBanner } from "@/components/cookie-consent";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
@@ -142,6 +144,7 @@ html {
       </head>
       <body>
         <GoogleTag />
+        <MetaPixel />
         <NuqsAdapter>
           <ThemeProvider
             attribute="class"
@@ -150,6 +153,7 @@ html {
             enableSystem={false}
           >
             {children}
+            <CookieBanner />
           </ThemeProvider>
         </NuqsAdapter>
       </body>

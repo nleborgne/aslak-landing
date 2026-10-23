@@ -1,3 +1,4 @@
+import { CookieSettingsLink } from "@/components/cookie-consent";
 import { getToday } from "@/lib/date";
 
 export const Footer = async () => {
@@ -27,6 +28,9 @@ export const Footer = async () => {
           >
             Contact
           </a>
+          <CookieSettingsLink
+            className="hover:text-foreground transition-colors"
+          />
         </div>
       </div>
     </footer>

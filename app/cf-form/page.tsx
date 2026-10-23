@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { CookieSettingsLink } from "@/components/cookie-consent";
 import { TrialForm } from "@/components/trial-dialog";
 import { TrialSuccess } from "@/components/trial-success";
 
@@ -37,6 +38,12 @@ export default function CfFormPage() {
             </Suspense>
           </>
         )}
+
+        <div className="text-center">
+          <CookieSettingsLink
+            className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+          />
+        </div>
       </div>
     </div>
   );
